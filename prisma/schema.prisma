@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client"
-  output = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -14,13 +14,13 @@ enum Role {
 }
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique @db.VarChar(254)
-  passwordHash String   @map("password_hash")
-  fullName     String   @map("full_name") @db.VarChar(100)
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(254)
+  passwordHash String    @map("password_hash")
+  fullName     String    @map("full_name") @db.VarChar(100)
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
   sessions     Session[]
 
   @@map("users")
@@ -38,4 +38,61 @@ model Session {
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+model Manufacturer {
+  id        String    @id @default(uuid()) @db.Uuid
+  legacyId  Int?      @unique @map("legacy_id")
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  products  Product[]
+
+  @@map("manufacturers")
+}
+
+model Product {
+  id                   String            @id @default(uuid()) @db.Uuid
+  legacyId             Int?              @unique @map("legacy_id")
+  code                 String            @unique
+  name                 String?
+  description          String?
+  price                Decimal?          @db.Decimal(14, 2)
+  currency             String            @default("VND") @db.VarChar(3)
+  imagePath            String?           @map("image_path")
+  sourceManufacturerId Int?              @map("source_manufacturer_id")
+  manufacturerId       String?           @map("manufacturer_id") @db.Uuid
+  manufacturer         Manufacturer?     @relation(fields: [manufacturerId], references: [id], onDelete: Restrict)
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+  deletedAt            DateTime?         @map("deleted_at")
+  categories           ProductCategory[]
+
+  @@index([manufacturerId])
+  @@index([createdAt, id])
+  @@index([deletedAt, createdAt, id])
+  @@map("products")
+}
+
+model Category {
+  id          String            @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  products    ProductCategory[]
+
+  @@index([createdAt, id])
+  @@map("categories")
+}
+
+model ProductCategory {
+  productId  String   @map("product_id") @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+  @@map("product_categories")
 }
