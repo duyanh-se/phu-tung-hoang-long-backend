@@ -1,0 +1,2 @@
+ALTER TABLE "products" DROP CONSTRAINT "products_manufacturer_id_fkey";
+ALTER TABLE "products" ADD CONSTRAINT "products_manufacturer_id_fkey" FOREIGN KEY ("manufacturer_id") REFERENCES "manufacturers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
