@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ManufacturersModule } from './manufacturers/manufacturers.module';
+import { ContactRequestsModule } from './contact-requests/contact-requests.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ManufacturersModule } from './manufacturers/manufacturers.module';
     ProductsModule,
     CategoriesModule,
     ManufacturersModule,
+    ContactRequestsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
