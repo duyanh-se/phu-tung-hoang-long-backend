@@ -1,0 +1,11 @@
+import * as Prisma from './internal/prismaNamespaceBrowser';
+export { Prisma };
+export * as $Enums from './enums';
+export * from './enums';
+export type ContactRequest = Prisma.ContactRequestModel;
+export type User = Prisma.UserModel;
+export type Session = Prisma.SessionModel;
+export type Manufacturer = Prisma.ManufacturerModel;
+export type Product = Prisma.ProductModel;
+export type Category = Prisma.CategoryModel;
+export type ProductCategory = Prisma.ProductCategoryModel;

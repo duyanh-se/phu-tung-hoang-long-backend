@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.env
+.env.*
+!.env.example
+.codex-build-check
+coverage
+test-results
+*.log
