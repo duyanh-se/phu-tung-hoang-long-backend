@@ -3,25 +3,37 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { Prisma, Role } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UserQueryDto } from './dto/user-query.dto';
 import { publicUserSelect } from './user.select';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
-  async list({ page, limit }: PaginationQueryDto) {
+  async list({ page, limit, search, role }: UserQueryDto) {
+    const where: Prisma.UserWhereInput = {
+      ...(role ? { role } : {}),
+      ...(search
+        ? {
+            OR: [
+              { fullName: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const [data, total] = await this.prisma.$transaction(
       [
         this.prisma.user.findMany({
+          where,
           select: publicUserSelect,
           skip: (page - 1) * limit,
           take: limit,
           orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         }),
-        this.prisma.user.count(),
+        this.prisma.user.count({ where }),
       ],
       { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
     );

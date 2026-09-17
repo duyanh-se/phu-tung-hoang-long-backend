@@ -41,4 +41,18 @@ describe('Users pagination OpenAPI contract', () => {
       });
     },
   );
+
+  it('documents user search and role filters', () => {
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().build(),
+    );
+    const parameters = document.paths['/api/v1/users'].get?.parameters ?? [];
+    expect(parameters).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'search', in: 'query' }),
+        expect.objectContaining({ name: 'role', in: 'query' }),
+      ]),
+    );
+  });
 });

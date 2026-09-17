@@ -17,10 +17,10 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { AuthenticatedUser } from '../auth/types/authenticated-request';
 import { ApiErrors } from '../common/decorators/api-errors.decorator';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { Role } from '../generated/prisma/enums';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { UserQueryDto } from './dto/user-query.dto';
 import { UserListResponseDto, UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
 
@@ -45,7 +45,7 @@ export class UsersController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: '[ADMIN] Danh sách người dùng có phân trang' })
   @ApiOkResponse({ type: UserListResponseDto })
-  list(@Query() query: PaginationQueryDto) {
+  list(@Query() query: UserQueryDto) {
     return this.users.list(query);
   }
 

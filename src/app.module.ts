@@ -11,6 +11,7 @@ import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ManufacturersModule } from './manufacturers/manufacturers.module';
 import { ContactRequestsModule } from './contact-requests/contact-requests.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ContactRequestsModule } from './contact-requests/contact-requests.modul
     CategoriesModule,
     ManufacturersModule,
     ContactRequestsModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
