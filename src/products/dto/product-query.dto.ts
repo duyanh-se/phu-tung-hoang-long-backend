@@ -1,6 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { trimText } from '../../common/transformers/trim-text.transformer';
 
@@ -24,4 +33,46 @@ export class ProductQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsUUID()
   manufacturerId?: string;
+
+  @ApiPropertyOptional({
+    enum: ['newest', 'price_asc', 'price_desc'],
+    default: 'newest',
+  })
+  @IsOptional()
+  @IsIn(['newest', 'price_asc', 'price_desc'])
+  sort?: 'newest' | 'price_asc' | 'price_desc';
+
+  @ApiPropertyOptional({
+    type: Number,
+    minimum: 0,
+    maximum: 999999999999.99,
+    description: 'Giá tối thiểu (VNĐ), bao gồm biên',
+  })
+  @Transform(({ value }) =>
+    typeof value === 'string' && /^\d+(\.\d{1,2})?$/.test(value)
+      ? Number(value)
+      : value,
+  )
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false })
+  @Min(0)
+  @Max(999999999999.99)
+  minPrice?: number;
+
+  @ApiPropertyOptional({
+    type: Number,
+    minimum: 0,
+    maximum: 999999999999.99,
+    description: 'Giá tối đa (VNĐ), bao gồm biên',
+  })
+  @Transform(({ value }) =>
+    typeof value === 'string' && /^\d+(\.\d{1,2})?$/.test(value)
+      ? Number(value)
+      : value,
+  )
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false })
+  @Min(0)
+  @Max(999999999999.99)
+  maxPrice?: number;
 }

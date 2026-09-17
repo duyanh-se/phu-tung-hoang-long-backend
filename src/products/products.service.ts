@@ -21,7 +21,14 @@ export class ProductsService {
     search,
     categoryId,
     manufacturerId,
+    sort,
+    minPrice,
+    maxPrice,
   }: ProductQueryDto) {
+    if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice)
+      throw new BadRequestException(
+        'Giá tối thiểu không được lớn hơn giá tối đa.',
+      );
     const where: Prisma.ProductWhereInput = {
       deletedAt: null,
       ...(search
@@ -34,6 +41,9 @@ export class ProductsService {
         : {}),
       ...(categoryId ? { categories: { some: { categoryId } } } : {}),
       ...(manufacturerId ? { manufacturerId } : {}),
+      ...(minPrice !== undefined || maxPrice !== undefined
+        ? { price: { gte: minPrice, lte: maxPrice } }
+        : {}),
     };
     const [products, total] = await this.prisma.$transaction(
       [
@@ -41,7 +51,18 @@ export class ProductsService {
           where,
           skip: (page - 1) * limit,
           take: limit,
-          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          orderBy:
+            sort === 'price_asc' || sort === 'price_desc'
+              ? [
+                  {
+                    price: {
+                      sort: sort === 'price_asc' ? 'asc' : 'desc',
+                      nulls: 'last',
+                    },
+                  },
+                  { id: 'asc' },
+                ]
+              : [{ createdAt: 'desc' }, { id: 'desc' }],
           select: productSelect,
         }),
         this.prisma.product.count({ where }),
