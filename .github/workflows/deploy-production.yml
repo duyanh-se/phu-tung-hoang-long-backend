@@ -23,7 +23,13 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -eu
-            cd /opt/phu-tung-hoang-long-backend
+            REPO_DIR="/opt/phu-tung-hoang-long-backend"
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              mkdir -p "$REPO_DIR"
+              git clone https://github.com/duyanh-se/phu-tung-hoang-long-backend.git "$REPO_DIR"
+            fi
+            git config --global --add safe.directory "$REPO_DIR"
+            cd "$REPO_DIR"
             git fetch origin main
             git checkout main
             git pull --ff-only origin main
