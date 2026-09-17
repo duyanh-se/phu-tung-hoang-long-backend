@@ -24,6 +24,9 @@ jobs:
           script: |
             set -eu
             REPO_DIR="/opt/phu-tung-hoang-long-backend"
+            if [ -d "$REPO_DIR" ] && [ ! -d "$REPO_DIR/.git" ]; then
+              rm -rf "$REPO_DIR"
+            fi
             if [ ! -d "$REPO_DIR/.git" ]; then
               mkdir -p "$REPO_DIR"
               git clone https://github.com/duyanh-se/phu-tung-hoang-long-backend.git "$REPO_DIR"
